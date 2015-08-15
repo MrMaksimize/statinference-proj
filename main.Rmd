@@ -39,12 +39,32 @@ We will use 40 columns as the samples of the random sim.
 sim_matrix <- matrix(rexp(sims * n, rate=lambda), sims, n)
 
 # Means of the random samples.
-sim_mean <- rowMeans(sim_matrix)
+sample_means <- rowMeans(sim_matrix)
 ```
 
 Let's plot the simulation means:
 ```{r}
-hist(sim_mean)
+#sim_mean_df <- data.frame(sim_mean)
+#g <- ggplot(sim_mean_df, aes(y = ..ndensity.., x=sim_mean)) + geom_histogram()
+#print(g)
+
+hist(sample_means, col="blue")
 ```
+
+# Sample Mean vs Theoretical Mean
+```{r}
+theoretical_mean <- 1/lambda
+sample_mean <- mean(sample_means)
+```
+
+We can see that the theoretical mean is **`r theoretical_mean`** and the mean of the samples is **`r sample_mean`**.  The difference between the two is minimal - only **`r abs(sample_mean - theoretical_mean)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
+
+# Sample Variance vs Theoretical Variance
+```{r}
+sample_var <- var(sample_means)
+theoretical_var <- (1/lambda) ^ 2/n
+```
+
+We can see that the theorical variance is **`r theoretical_var `** and the variance of sample means is **`r sample_var`**.  The difference between the two is minimal - only **`r abs(sample_var - theoretical_var)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
 
 
