@@ -42,16 +42,19 @@ sim_matrix <- matrix(rexp(sims * n, rate=lambda), sims, n)
 sample_means <- rowMeans(sim_matrix)
 ```
 
+
 Let's plot the simulation means:
 ```{r}
 #sim_mean_df <- data.frame(sim_mean)
 #g <- ggplot(sim_mean_df, aes(y = ..ndensity.., x=sim_mean)) + geom_histogram()
 #print(g)
 
+#TODO -- ggplot vs hist return different counts.  figure out why.
+
 hist(sample_means, col="blue")
 ```
 
-# Sample Mean vs Theoretical Mean
+# Sample Mean (Center) vs Theoretical Mean (Center)
 ```{r}
 theoretical_mean <- 1/lambda
 sample_mean <- mean(sample_means)
@@ -67,4 +70,28 @@ theoretical_var <- (1/lambda) ^ 2/n
 
 We can see that the theorical variance is **`r theoretical_var `** and the variance of sample means is **`r sample_var`**.  The difference between the two is minimal - only **`r abs(sample_var - theoretical_var)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
 
+# Distribution: 
+How can we tell the distribution of the sample means is approximately normal? 
 
+Let's simulate and plot a random normal distribution, and show a distribution of our adjusted sample means based on the CLT formula of
+
+***Adjusted from slides -- check if right***
+
+$$\frac{\bar X_n - \mu}{\sigma / \sqrt{n}}=
+\frac{\sqrt n (\bar X_n - \mu)}{\sigma}
+= \frac{\mbox{Estimate} - \mbox{Mean of population }}{\mbox{Std. Err. of estimate}}$$ 
+
+next to it.
+
+```{r fig.width=4, fig.height=4, echo=FALSE, out.extra='style="float:left"'}
+normal_sim <- data.frame(x = rnorm(1000, 0, 1))
+hist(normal_sim$x, col="red", main="Simulated Random Normal Distribution")
+```
+
+```{r fig.width=4, fig.height=4, echo=FALSE, out.extra='style="float:left"'}
+adjusted_sample_means <- 
+    data.frame(x = (sample_means - (1/lambda))/theoretical_var/sqrt(40))
+hist(adjusted_sample_means$x, col="blue", main="Adjusted Sample Means Per CLT")
+```
+
+We can see from the images above that both a randomly generated normal distribution and our adjusted sample means both center around 0, and follow the same pattern.  
