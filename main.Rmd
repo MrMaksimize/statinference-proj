@@ -4,9 +4,15 @@ output: html_document
 ---
 
 ## Overview
-Investigate the exponential distribution in R and compare it with the Central Limit Theorem.The exponential distribution can be simulated in R with rexp(n, lambda) where lambda is the rate parameter. The mean of exponential distribution is 1/lambda and the standard deviation is also 1/lambda. Set lambda = 0.2 for all of the simulations. You will investigate the distribution of averages of 40 exponentials. Note that you will need to do a thousand simulations.
+We will nvestigate the exponential distribution in R and compare it with the Central Limit Theorem.  
 
-Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponentials. You should:
+The exponential distribution can be simulated in R with ***rexp(n, lambda)*** where ***lambda*** is the rate parameter. The mean of exponential distribution is ***1/lambda*** and the standard deviation is also ***1/lambda***. 
+
+Lambda will be set to 0.2 for all of the simulations. 
+
+We will investigate the distribution of averages of 40 exponentials. We will need to do a thousand simulations.
+
+The goal is to illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponentials. You should:
 
 1. Show the sample mean and compare it to the theoretical mean of the distribution.
 
@@ -17,7 +23,7 @@ Illustrate via simulation and associated explanatory text the properties of the 
 
 
 ```{r setup}
-# Setup Code
+# Setup Code, include libraries.
 library(ggplot2)
 
 # Variables
@@ -25,13 +31,12 @@ sims <- 1000
 lambda <- 0.2
 n <- 40
 
+# Set random seed for reproducibility.
 set.seed(3737)
-
-
 ```
 
 # Simulation
-Create the matrix of 1000 rows. 
+Create a matrix of 1000 rows by 40 columns. 
 We will use 40 columns as the samples of the random sim.  
 ```{r}
 # Since a matrix fills in a cascade, this does the job of generating the 
@@ -45,12 +50,6 @@ sample_means <- rowMeans(sim_matrix)
 
 Let's plot the simulation means:
 ```{r}
-#sim_mean_df <- data.frame(sim_mean)
-#g <- ggplot(sim_mean_df, aes(y = ..ndensity.., x=sim_mean)) + geom_histogram()
-#print(g)
-
-#TODO -- ggplot vs hist return different counts.  figure out why.
-
 hist(sample_means, col="blue")
 ```
 
@@ -60,38 +59,42 @@ theoretical_mean <- 1/lambda
 sample_mean <- mean(sample_means)
 ```
 
-We can see that the theoretical mean is **`r theoretical_mean`** and the mean of the samples is **`r sample_mean`**.  The difference between the two is minimal - only **`r abs(sample_mean - theoretical_mean)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
+We can see that the theoretical mean is **`r theoretical_mean`** and the mean of the samples is **`r sample_mean`**.  The difference between the two is minimal - only **`r abs(sample_mean - theoretical_mean)`.**  This makes the sample mean an unbiased estimator of the population mean.
 
 # Sample Variance vs Theoretical Variance
 ```{r}
 sample_var <- var(sample_means)
-theoretical_var <- (1/lambda) ^ 2/n
+theoretical_var <- (theoretical_mean) ^ 2/n
 ```
 
-We can see that the theorical variance is **`r theoretical_var `** and the variance of sample means is **`r sample_var`**.  The difference between the two is minimal - only **`r abs(sample_var - theoretical_var)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
+We can see that the theoretical variance is **`r theoretical_var `** and the variance of sample means is **`r sample_var`**.  The difference between the two is minimal - only **`r abs(sample_var - theoretical_var)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
 
-# Distribution: 
-How can we tell the distribution of the sample means is approximately normal? 
+## How can we tell the distribution of the sample means is approximately normal? 
 
-Let's simulate and plot a random normal distribution, and show a distribution of our adjusted sample means based on the CLT formula of
+### Compare to Normal Distribution
+Let's simulate and plot a random normal distribution, and show a distribution of our adjusted sample means next to it.
 
-***Adjusted from slides -- check if right***
-
-$$\frac{\bar X_n - \mu}{\sigma / \sqrt{n}}=
-\frac{\sqrt n (\bar X_n - \mu)}{\sigma}
-= \frac{\mbox{Estimate} - \mbox{Mean of population }}{\mbox{Std. Err. of estimate}}$$ 
-
-next to it.
+```{r}
+normal_sim <- data.frame(x = rnorm(1000, 0, 1))
+```
 
 ```{r fig.width=4, fig.height=4, echo=FALSE, out.extra='style="float:left"'}
-normal_sim <- data.frame(x = rnorm(1000, 0, 1))
 hist(normal_sim$x, col="red", main="Simulated Random Normal Distribution")
 ```
 
-```{r fig.width=4, fig.height=4, echo=FALSE, out.extra='style="float:left"'}
-adjusted_sample_means <- 
-    data.frame(x = (sample_means - (1/lambda))/theoretical_var/sqrt(40))
-hist(adjusted_sample_means$x, col="blue", main="Adjusted Sample Means Per CLT")
+```{r fig.width=4, fig.height=4, echo=FALSE, out.extra='style="float:right"'}
+hist(sample_means, col="blue", main="Sample Means")
 ```
 
-We can see from the images above that both a randomly generated normal distribution and our adjusted sample means both center around 0, and follow the same pattern.  
+<div style="clear: both"></div>
+
+We can see from the images above that the histogram of our means can be adequately estimated with the normal distribution.
+
+### Compare the Confidence Intervals:
+```{r}
+conf_interval <- round (
+    mean(sample_means) + c(-1,1) * 1.96 * sd(sample_means) / sqrt(n), 3
+)
+theoretical_conf_interval <- theoretical_mean + c(-1,1) * 1.96 * sqrt(theoretical_var) / sqrt(n);
+```
+We can see that the theoretical 95% confidence interval is **`r theoretical_conf_interval `** and the actual confidence interval is **`r conf_interval`**.  The difference between the two is minimal so we can once again say that we match really closely to the normal distribution.
