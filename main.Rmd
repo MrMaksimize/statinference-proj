@@ -3,7 +3,7 @@ title: "Exponential Distribution Simulation and Comparison"
 output: html_document
 ---
 
-## Overview
+### Overview
 We will nvestigate the exponential distribution in R and compare it with the Central Limit Theorem.  
 
 The exponential distribution can be simulated in R with ***rexp(n, lambda)*** where ***lambda*** is the rate parameter. The mean of exponential distribution is ***1/lambda*** and the standard deviation is also ***1/lambda***. 
@@ -35,7 +35,7 @@ n <- 40
 set.seed(3737)
 ```
 
-# Simulation
+### Simulation
 Create a matrix of 1000 rows by 40 columns. 
 We will use 40 columns as the samples of the random sim.  
 ```{r}
@@ -53,7 +53,7 @@ Let's plot the simulation means:
 hist(sample_means, col="blue")
 ```
 
-# Sample Mean (Center) vs Theoretical Mean (Center)
+### Sample Mean (Center) vs Theoretical Mean (Center)
 ```{r}
 theoretical_mean <- 1/lambda
 sample_mean <- mean(sample_means)
@@ -61,7 +61,7 @@ sample_mean <- mean(sample_means)
 
 We can see that the theoretical mean is **`r theoretical_mean`** and the mean of the samples is **`r sample_mean`**.  The difference between the two is minimal - only **`r abs(sample_mean - theoretical_mean)`.**  This makes the sample mean an unbiased estimator of the population mean.
 
-# Sample Variance vs Theoretical Variance
+### Sample Variance vs Theoretical Variance
 ```{r}
 sample_var <- var(sample_means)
 theoretical_var <- (theoretical_mean) ^ 2/n
@@ -69,17 +69,17 @@ theoretical_var <- (theoretical_mean) ^ 2/n
 
 We can see that the theoretical variance is **`r theoretical_var `** and the variance of sample means is **`r sample_var`**.  The difference between the two is minimal - only **`r abs(sample_var - theoretical_var)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
 
-## How can we tell the distribution of the sample means is approximately normal? 
+### How can we tell the distribution of the sample means is approximately normal? 
 
-### Compare to Normal Distribution
+##### Compare to Normal Distribution
 Let's simulate and plot a random normal distribution, and show a distribution of our adjusted sample means next to it.
 
 ```{r}
-normal_sim <- data.frame(x = rnorm(1000, 0, 1))
+normal_sim <- rnorm(1000, 0, 1)
 ```
 
 ```{r fig.width=4, fig.height=4, echo=FALSE, out.extra='style="float:left"'}
-hist(normal_sim$x, col="red", main="Simulated Random Normal Distribution")
+hist(normal_sim, col="red", main="Simulated Random Normal Distribution")
 ```
 
 ```{r fig.width=4, fig.height=4, echo=FALSE, out.extra='style="float:right"'}
@@ -90,7 +90,7 @@ hist(sample_means, col="blue", main="Sample Means")
 
 We can see from the images above that the histogram of our means can be adequately estimated with the normal distribution.
 
-### Compare the Confidence Intervals:
+##### Compare the Confidence Intervals:
 ```{r}
 conf_interval <- round (
     mean(sample_means) + c(-1,1) * 1.96 * sd(sample_means) / sqrt(n), 3
