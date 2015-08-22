@@ -1,0 +1,102 @@
+---
+title: "Exponential Distribution Simulation and Comparison"
+output: html_document
+---
+
+### Overview
+1. Load the ToothGrowth data and perform some basic exploratory data analyses 
+2. Provide a basic summary of the data.
+3. Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
+4. State your conclusions and the assumptions needed for your conclusions. 
+
+#### Load Data, Initial Setup.
+```{r setup}
+# Setup Code, include libraries.
+library(ggplot2)
+library(datasets)
+library(dplyr)
+tg <- ToothGrowth
+str(tg)
+```
+
+#### Explore Data
+```{r eda}
+tg_summary <- tg %>%
+    group_by(dose, supp) %>%
+    summarise(len = mean(len))
+
+g <- ggplot(data = tg, aes(x = dose, y = len)) + 
+     geom_point(aes(group=supp, colour=supp)) +
+     geom_line(data=tg_summary, aes(group=supp, colour=supp))
+
+print(g)
+```
+
+We can see above, that with both types of supplements, an increase in dosage increases the tooth growth.
+
+#### Basic Data Summary
+```{r basic_summary}
+tg_oj <- filter(tg, supp == 'OJ')
+tg_vc <- filter(tg, supp == 'VC')
+summary(tg)
+```
+There are a few points we now know about the data:
+
+* There are a total of `r nrow(tg)` rows and `r ncol(tg)` columns.
+* There are `r nrow(tg_oj)` rows of data for the OJ supplement.
+* There are `r nrow(tg_vc)` rows of data for the VC supplement.
+* The means for the data at different dosage levels by supplement are as follows:
+```{r}
+tg_summary
+```
+
+#### Comparison of Tooth Growth
+Let's find out the difference between the lengths of the growth when each supplement was used.  If length_diff is positive, OJ is more effective than VC.
+
+```{r}
+ldif <- tg_oj$len - tg_vc$len
+cdata <- data.frame(tg_oj$dose, ldif)
+names(cdata) <- c("dose", "length_diff")
+```
+
+##### Dose is 0.5
+```{r}
+cdose <- 0.5
+data <- filter(cdata, dose == cdose)
+tr <- t.test(data)
+```
+
+* Confidence interval is **`r tr$conf.int`**.
+* Mean is **`r mean(data$length_diff)`**. 
+* Both are positive.  OJ is more effective when dose is **`r cdose`**.  
+* The p-value is **`r tr$p.value`** meaning that the two are different.
+
+##### Dose is 1.0
+```{r}
+cdose <- 1.0
+data <- filter(cdata, dose == cdose)
+tr <- t.test(data)
+```
+
+* Confidence interval is **`r tr$conf.int`**.
+* Mean is **`r mean(data$length_diff)`**. 
+* Both are positive.  OJ is more effective when dose is **`r cdose`**.  
+* The p-value is **`r tr$p.value`** meaning that the two are different.
+
+##### Dose is 2.0
+```{r}
+cdose <- 2.0
+data <- filter(cdata, dose == cdose)
+tr <- t.test(data)
+```
+
+* Confidence interval is **`r tr$conf.int`**.
+* Mean is **`r mean(data$length_diff)`**. 
+* Mean is low, and confidence interval is positive and negative. Methods have similar effectiveness when dose is **`r cdose`**.  
+* The p-value is **`r tr$p.value`** - the two methods are approaching parity (0.5).
+
+#### Conclusion
+1. From the plot above, we can see that as the dose increases the effectiveness of both of the methods increases.
+2. From the hypothesis and confidence interval analysis, the lower the the dose values (0.5 and 1.0) OJ is more effective.  While for higher dose methods (2.0) the two methods come close to being similar.
+
+***Assumption:*** We have used the t-model even though the amount of data is small.

@@ -4,7 +4,7 @@ output: html_document
 ---
 
 ### Overview
-We will nvestigate the exponential distribution in R and compare it with the Central Limit Theorem.  
+We will investigate the exponential distribution in R and compare it with the Central Limit Theorem.  
 
 The exponential distribution can be simulated in R with ***rexp(n, lambda)*** where ***lambda*** is the rate parameter. The mean of exponential distribution is ***1/lambda*** and the standard deviation is also ***1/lambda***. 
 
@@ -12,7 +12,7 @@ Lambda will be set to 0.2 for all of the simulations.
 
 We will investigate the distribution of averages of 40 exponentials. We will need to do a thousand simulations.
 
-The goal is to illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponentials. You should:
+The goal is to illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponentials. We will: 
 
 1. Show the sample mean and compare it to the theoretical mean of the distribution.
 
@@ -67,7 +67,7 @@ sample_var <- var(sample_means)
 theoretical_var <- (theoretical_mean) ^ 2/n
 ```
 
-We can see that the theoretical variance is **`r theoretical_var `** and the variance of sample means is **`r sample_var`**.  The difference between the two is minimal - only **`r abs(sample_var - theoretical_var)`.**  TODO -- is this an unbiased estimator? Or can this be considered an estimator <> estimand?
+We can see that the theoretical variance is **`r theoretical_var `** and the variance of sample means is **`r sample_var`**.  The difference between the two is minimal - only **`r abs(sample_var - theoretical_var)`.**  This makes it an unbiased estimator of the population variance.
 
 ### How can we tell the distribution of the sample means is approximately normal? 
 
